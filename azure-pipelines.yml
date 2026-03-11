@@ -107,6 +107,7 @@ stages:
                 echo "Uncompress complete: $(stagePath)/deploy-temp/odoo.sql"
 
           # Restore Database
+          # Restore Database
           - task: SSH@0
             displayName: "Restore Database"
             inputs:
@@ -114,13 +115,15 @@ stages:
               runOptions: commands
               commands: |
                 set -e
-                echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' cp /home/is214/deploy-temp/restore_db.sh /tmp/
-                echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' cp /home/is214/deploy-temp/odoo.sql /tmp/
+                # Move files to /tmp and set permissions as your login user (is214)
+                echo "$(STAGINGUSERPASSWORD)" | sudo -S cp $(stagePath)/deploy-temp/restore_db.sh /tmp/
+                echo "$(STAGINGUSERPASSWORD)" | sudo -S cp $(stagePath)/deploy-temp/odoo.sql /tmp/
+                
+                echo "$(STAGINGUSERPASSWORD)" | sudo -S chmod +x /tmp/restore_db.sh
+                echo "$(STAGINGUSERPASSWORD)" | sudo -S chmod 644 /tmp/odoo.sql
 
-                echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' chmod +x /tmp/restore_db.sh
-                echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' chmod 644 /tmp/odoo.sql
-
-                echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' -u postgres /tmp/restore_db.sh "odoo17" "odoo" "/tmp/odoo.sql"
+                # Run the script AS the postgres user
+                echo "$(STAGINGUSERPASSWORD)" | sudo -S -u postgres /tmp/restore_db.sh "odoo17" "odoo" "/tmp/odoo.sql"
 
           # Run update script
           - task: SSH@0
