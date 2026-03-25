@@ -56,7 +56,7 @@ stages:
               commands: |
                 echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' chmod +x $(updateScript)
                 echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' $(updateScript)
-
+              failOnStdErr: false
 
 # =========================
 # PRODUCTION STAGE
@@ -100,3 +100,4 @@ stages:
               commands: |
                 echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' chmod +x $(updateScript)
                 echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' $(updateScript)
+              failOnStdErr: false
