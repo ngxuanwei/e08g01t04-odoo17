@@ -8,9 +8,9 @@ pool:
   name: Default
 
 variables:
-  repoUrl: 'https://github.com/souravb-smu/odoo17.git'
-  updateScript: '/home/azureuser/deploy-temp/update_code.sh'
-  stagePath: '/home/azureuser/'
+  repoUrl: 'https://github.com/ngxuanwei/e08g01t04-odoo17'
+  updateScript: '/home/is214/deploy-temp/update_code.sh'
+  stagePath: '/home/is214/'
 
 stages:
 
@@ -32,7 +32,7 @@ stages:
           - task: SSH@0
             displayName: "Sync Code - Staging"
             inputs:
-              sshEndpoint: 'ssh-odoo17'
+              sshEndpoint: 'ssh-odoo17-staging'
               runOptions: commands
               commands: |
                 set -e
@@ -51,7 +51,7 @@ stages:
           - task: SSH@0
             displayName: "Run Update Script - Staging"
             inputs:
-              sshEndpoint: 'ssh-odoo17'
+              sshEndpoint: 'ssh-odoo17-staging'
               runOptions: commands
               commands: |
                 echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' chmod +x $(updateScript)
@@ -76,7 +76,7 @@ stages:
           - task: SSH@0
             displayName: "Sync Code - Production"
             inputs:
-              sshEndpoint: 'ssh-odoo17-production'
+              sshEndpoint: 'ssh-odoo17-prod'
               runOptions: commands
               commands: |
                 set -e
@@ -95,7 +95,7 @@ stages:
           - task: SSH@0
             displayName: "Run Update Script - Production"
             inputs:
-              sshEndpoint: 'ssh-odoo17-production'
+              sshEndpoint: 'ssh-odoo17-prod'
               runOptions: commands
               commands: |
                 echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' chmod +x $(updateScript)
