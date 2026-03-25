@@ -1,4 +1,5 @@
 # Odoo  
+Test CI/CD deployment
 #G10 -CHANGES
 
 [![Build Status](https://runbot.odoo.com/runbot/badge/flat/1/master.svg)](https://runbot.odoo.com/runbot)
