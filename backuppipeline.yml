@@ -1,0 +1,81 @@
+trigger:
+  branches:
+    include:
+      - Staging
+      - master
+
+variables:
+  repoUrl: 'https://github.com/souravb-smu/odoo17.git'
+  updateScript: '/home/azureuser/deploy-temp/update_code.sh'
+  stagePath: '/home/azureuser/'
+
+stages:
+
+# =========================
+# STAGING
+# =========================
+- stage: Staging
+  displayName: Deploy to Staging
+  condition: eq(variables['Build.SourceBranchName'], 'Staging')
+
+  jobs:
+  - deployment: DeployStaging
+    environment: Staging
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: none
+
+          - script: |
+              set -e
+              echo "Deploying branch: $(Build.SourceBranchName)"
+
+              cd $(stagePath)
+              rm -rf deploy-temp odoo17
+
+              git clone -b Staging $(repoUrl) --quiet
+              mv odoo17 deploy-temp
+
+              cd deploy-temp
+              rm -f .DS_Store
+              rm -rf .github
+
+          - script: |
+              echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' chmod +x $(updateScript)
+              echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' $(updateScript)
+
+
+# =========================
+# PRODUCTION
+# =========================
+- stage: Production
+  displayName: Deploy to Production
+  condition: eq(variables['Build.SourceBranchName'], 'master')
+
+  jobs:
+  - deployment: DeployProduction
+    environment: Production
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: none
+
+          - script: |
+              set -e
+              echo "Deploying branch: $(Build.SourceBranchName)"
+
+              cd $(stagePath)
+              rm -rf deploy-temp odoo17
+
+              git clone -b master $(repoUrl) --quiet
+              mv odoo17 deploy-temp
+
+              cd deploy-temp
+              rm -f .DS_Store
+              rm -rf .github
+
+          - script: |
+              echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' chmod +x $(updateScript)
+              echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' $(updateScript)

@@ -29,7 +29,6 @@ stages:
         deploy:
           steps:
 
-          # Sync code
           - task: SSH@0
             displayName: "Sync Code - Staging"
             inputs:
@@ -48,7 +47,6 @@ stages:
                 rm -f .DS_Store
                 rm -rf .github
 
-          # Run update script
           - task: SSH@0
             displayName: "Run Update Script - Staging"
             inputs:
@@ -74,7 +72,6 @@ stages:
         deploy:
           steps:
 
-          # Sync code
           - task: SSH@0
             displayName: "Sync Code - Production"
             inputs:
@@ -93,39 +90,6 @@ stages:
                 rm -f .DS_Store
                 rm -rf .github
 
-          # Uncompress SQL on VM
-          - task: SSH@0
-            displayName: "Uncompress odoo.sql.gz on VM"
-            inputs:
-              sshEndpoint: 'ssh-odoo17-prod'
-              runOptions: commands
-              commands: |
-                set -e
-                cd $(stagePath)/deploy-temp/
-                echo "Uncompressing odoo.sql.gz..."
-                gunzip -c $(stagePath)/deploy-temp/odoo.sql.gz > $(stagePath)/deploy-temp/odoo.sql
-                echo "Uncompress complete: $(stagePath)/deploy-temp/odoo.sql"
-
-          # Restore Database
-          # Restore Database
-          - task: SSH@0
-            displayName: "Restore Database"
-            inputs:
-              sshEndpoint: 'ssh-odoo17-prod'
-              runOptions: commands
-              commands: |
-                set -e
-                # Move files to /tmp and set permissions as your login user (is214)
-                echo "$(STAGINGUSERPASSWORD)" | sudo -S cp $(stagePath)/deploy-temp/restore_db.sh /tmp/
-                echo "$(STAGINGUSERPASSWORD)" | sudo -S cp $(stagePath)/deploy-temp/odoo.sql /tmp/
-                
-                echo "$(STAGINGUSERPASSWORD)" | sudo -S chmod +x /tmp/restore_db.sh
-                echo "$(STAGINGUSERPASSWORD)" | sudo -S chmod 644 /tmp/odoo.sql
-
-                # Run the script AS the postgres user
-                echo "$(STAGINGUSERPASSWORD)" | sudo -S -u postgres /tmp/restore_db.sh "odoo17" "odoo" "/tmp/odoo.sql"
-
-          # Run update script
           - task: SSH@0
             displayName: "Run Update Script - Production"
             inputs:
