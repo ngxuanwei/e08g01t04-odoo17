@@ -12,7 +12,7 @@ services:
       - odoo-db-data:/var/lib/postgresql/data/pgdata
  
   odoo:
-    image: odoo:99.0-BROKEN
+    image: odoo:17.0
     restart: unless-stopped
     depends_on:
       - db
